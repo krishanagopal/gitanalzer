@@ -1,6 +1,6 @@
-export const calculateDevScore = (repoStats, activityStats) => {
+export const calculateDevScore = (repoStats, activityStats, commitStats) => {
 
-    const commits = activityStats.totalCommits;
+    const commits = commitStats ? commitStats.totalCommitsAnalyzed : activityStats.totalCommits;
     const activeMonths = activityStats.activeMonths;
 
     const stars = repoStats.totalStars;

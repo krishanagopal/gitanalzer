@@ -77,3 +77,36 @@ body {
   background-color: #000;
   color: #fff;
 }
+
+@media print {
+  html, body, main {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+  }
+
+  body {
+    background-color: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .liquid-glass, .liquid-glass-strong {
+    box-shadow: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: none !important;
+    background: transparent !important;
+  }
+  
+  .liquid-glass::before, .liquid-glass-strong::before {
+    display: none !important;
+  }
+}

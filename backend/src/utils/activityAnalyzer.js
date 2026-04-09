@@ -7,7 +7,7 @@ export const analyzeActivity = (events) => {
 
         if (event.type === "PushEvent") {
 
-            totalCommits += event.payload.commits.length;
+            totalCommits += event.payload.commits?.length || 0;
 
             const date = new Date(event.created_at);
 

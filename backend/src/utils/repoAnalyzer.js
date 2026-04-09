@@ -1,21 +1,50 @@
 export const analyzeRepos = (repos) => {
-
     let totalStars = 0;
     let activeRepos = 0;
+    let reposWithDocs = 0;
+    let archivedRepos = 0;
+    let totalDaysSinceUpdate = 0;
 
     const languages = new Set();
     const languageBreakdown = {};
+    const recentLanguageBreakdown = {};
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const today = new Date();
+
+    const sortedRepos = [...repos].sort((a, b) => b.stargazers_count - a.stargazers_count);
+    const topProjects = sortedRepos.slice(0, 2).map(r => ({
+        name: r.name,
+        html_url: r.html_url,
+        description: r.description,
+        stars: r.stargazers_count
+    }));
+
+    const highestStars = sortedRepos.length > 0 ? sortedRepos[0].stargazers_count : 0;
 
     repos.forEach(repo => {
-
         totalStars += repo.stargazers_count;
+
+        if (repo.archived) {
+            archivedRepos++;
+        }
 
         if (!repo.fork && repo.size > 0) {
             activeRepos++;
+            if (repo.description || repo.has_wiki) {
+                reposWithDocs++;
+            }
+            
+            if (repo.updated_at) {
+                const updatedDate = new Date(repo.updated_at);
+                const diffTime = Math.abs(today - updatedDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                totalDaysSinceUpdate += diffDays;
+            }
         }
 
         if (repo.language) {
-
             languages.add(repo.language);
 
             if (languageBreakdown[repo.language]) {
@@ -24,14 +53,30 @@ export const analyzeRepos = (repos) => {
                 languageBreakdown[repo.language] = 1;
             }
 
+            const updatedDate = new Date(repo.updated_at);
+            if (updatedDate >= sixMonthsAgo) {
+                if (recentLanguageBreakdown[repo.language]) {
+                    recentLanguageBreakdown[repo.language]++;
+                } else {
+                    recentLanguageBreakdown[repo.language] = 1;
+                }
+            }
         }
-
     });
+
+    const documentationScore = activeRepos > 0 ? (reposWithDocs / activeRepos) * 100 : 0;
+    const avgDaysSinceUpdate = activeRepos > 0 ? totalDaysSinceUpdate / activeRepos : 0;
 
     return {
         totalStars,
+        highestStars,
+        topProjects,
         activeRepos,
+        archivedRepos,
+        avgDaysSinceUpdate: Math.round(avgDaysSinceUpdate),
         languages: Array.from(languages),
-        languageBreakdown
+        languageBreakdown,
+        recentLanguageBreakdown,
+        documentationScore: Math.round(documentationScore)
     };
 };

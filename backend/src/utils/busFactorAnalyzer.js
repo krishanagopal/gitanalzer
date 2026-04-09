@@ -11,7 +11,7 @@ export const analyzeBusFactor = async (repos, githubClient) => {
                 `/repos/${repo.owner.login}/${repo.name}/contributors?per_page=5`
             );
 
-            const contributors = res.data;
+            const contributors = res.data || [];
 
             if (contributors.length <= 1) {
                 soloProjects++;

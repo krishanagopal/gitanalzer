@@ -14,7 +14,7 @@ export const analyzeOwnership = async (repos, githubClient, username) => {
                 `/repos/${repo.owner.login}/${repo.name}/contributors?per_page=10`
             );
 
-            const contributors = res.data;
+            const contributors = res.data || [];
 
             const totalCommits = contributors.reduce(
                 (sum, c) => sum + c.contributions,

@@ -5,6 +5,7 @@ import { ArrowUpRight, Play } from 'lucide-react';
 import { BlurText } from '../components/BlurText';
 import { Footer } from '../components/Footer';
 import Link from 'next/link';
+import { SearchComponent } from '../components/SearchComponent';
 
 export default function Home() {
   return (
@@ -45,9 +46,7 @@ export default function Home() {
             transition={{ delay: 1.1, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center gap-6 mt-12"
           >
-            <button className="liquid-glass-strong rounded-full px-8 py-4 font-body font-medium flex items-center gap-2 hover:scale-105 transition-transform text-sm shadow-xl">
-              Get Your Score <ArrowUpRight className="w-4 h-4" />
-            </button>
+            <SearchComponent />
             <Link href="/how-it-works" className="font-body font-medium flex items-center gap-2 hover:text-white/80 transition-colors text-sm text-white px-4 py-2">
               See how it works <Play className="w-4 h-4" />
             </Link>
