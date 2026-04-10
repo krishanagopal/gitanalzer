@@ -4,10 +4,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { getGithubAnalysis } from '../../../lib/api';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
-import { ArrowLeft, Loader2, AlertCircle, Info, Printer, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, Info, Share2, ExternalLink, CheckCircle2, Zap, Target, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import ShareModal from '../../../components/ShareModal';
 
 export default function UserDashboard() {
   const params = useParams();
@@ -19,7 +18,7 @@ export default function UserDashboard() {
   const [languageTimeframe, setLanguageTimeframe] = useState<'all' | 'recent'>('all');
   const [showComparison, setShowComparison] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     if (!username) return;
@@ -45,38 +44,6 @@ export default function UserDashboard() {
     return () => { isMounted = false; };
   }, [username]);
 
-  const handlePrint = async () => {
-    if (!targetRef.current) return;
-    setIsGeneratingPdf(true);
-    try {
-      const element = targetRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        backgroundColor: '#000000',
-        useCORS: true,
-        logging: false,
-        ignoreElements: (el) => el.id === 'hide-in-pdf' || el.classList.contains('hide-in-pdf')
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Calculate dimensions to fit exactly on a 1-page PDF
-      const pdf = new jsPDF({
-        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`GitAnalyzer_${username}.pdf`);
-    } catch (error) {
-      console.error('Failed to generate PDF:', error);
-      // Fallback
-      window.print();
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -103,7 +70,7 @@ export default function UserDashboard() {
 
   if (!data) return null;
 
-  const { profile, score, repoStats, activityStats, cicdStats, commitStats, busFactorStats, ownershipStats, aiSummary } = data;
+  const { profile, score, repoStats, activityStats, cicdStats, commitStats, busFactorStats, ownershipStats, aiSummary, recruiterSignals } = data;
   
   // Prepare chart data
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a855f7', '#ec4899', '#14b8a6'];
@@ -132,12 +99,11 @@ export default function UserDashboard() {
             {showComparison ? 'Hide Senior Benchmark' : 'Compare with Sr. Dev'}
           </button>
           <button 
-            onClick={handlePrint}
-            disabled={isGeneratingPdf}
-            className="liquid-glass rounded-full px-4 py-2 flex items-center gap-2 text-sm font-medium hover:bg-white/10 transition-colors disabled:opacity-50"
+            onClick={() => setIsShareModalOpen(true)}
+            className="liquid-glass rounded-full px-4 py-2 flex items-center gap-2 text-sm font-medium hover:bg-white/10 transition-colors"
           >
-            {isGeneratingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
-            {isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}
+            <Share2 className="w-4 h-4" />
+            Share Scorecard
           </button>
         </div>
       </div>
@@ -185,6 +151,69 @@ export default function UserDashboard() {
           <StatCard title="Max Streak" value={`${commitStats?.longestStreak || 0}d`} />
           <StatCard title="Archived" value={repoStats.archivedRepos || 0} />
         </div>
+
+        {/* Recruiter Scorecard */}
+        {recruiterSignals && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 print:block print:space-y-8">
+            {/* The Good - Signals Recruits Appreciate */}
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md print:bg-transparent print:border-black/20 print:text-black">
+              <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                <CheckCircle2 className="w-6 h-6 text-green-400 print:text-green-600" />
+                <h3 className="text-2xl font-heading italic">Recruiter Signals</h3>
+              </div>
+              <div className="space-y-6">
+                {recruiterSignals.pros.map((pro: any, i: number) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="mt-1">
+                      <div className="w-2 h-2 rounded-full bg-green-400 mt-2" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white/90 print:text-black/90">{pro.title}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                          pro.impact === 'High' ? 'border-green-500/50 text-green-400' : 
+                          pro.impact === 'Medium' ? 'border-blue-500/50 text-blue-400' : 
+                          'border-white/20 text-white/40'
+                        }`}>{pro.impact} Impact</span>
+                      </div>
+                      <p className="text-sm text-white/60 print:text-black/60 mt-1">{pro.description}</p>
+                    </div>
+                  </div>
+                ))}
+                {recruiterSignals.pros.length === 0 && (
+                   <p className="text-white/40 italic">Building more engineering signals to impress recruiters...</p>
+                )}
+              </div>
+            </div>
+
+            {/* Growth Areas - Optimization Opportunities */}
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md print:bg-transparent print:border-black/20 print:text-black">
+              <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                <Zap className="w-6 h-6 text-amber-400 print:text-amber-600" />
+                <h3 className="text-2xl font-heading italic">Optimization Opportunities</h3>
+              </div>
+              <div className="space-y-6">
+                {recruiterSignals.cons.map((con: any, i: number) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="mt-1">
+                       <AlertCircle className="w-4 h-4 text-amber-400/60" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-white/90 print:text-black/90">{con.title}</span>
+                      <p className="text-sm text-white/60 print:text-black/60 mt-1">{con.description}</p>
+                      <div className="mt-2 text-xs bg-amber-400/10 border border-amber-400/20 text-amber-300 print:text-amber-700 px-3 py-1 rounded-lg inline-block">
+                        <span className="font-semibold mr-1">Pro-tip:</span> {con.suggestion}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {recruiterSignals.cons.length === 0 && (
+                   <p className="text-green-400 italic">No major optimization areas found. Your profile is in excellent shape!</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Breakdown Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 print:block print:space-y-8">
@@ -305,6 +334,13 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
+
+      <ShareModal 
+        isOpen={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+        username={username}
+        score={score}
+      />
     </div>
   );
 }

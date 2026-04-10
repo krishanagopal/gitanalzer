@@ -6,6 +6,7 @@ import { analyzeCICD } from "../utils/cicdAnalyzer.js";
 import { analyzeCommits } from "../utils/commitAnalyzer.js";
 import { analyzeBusFactor } from "../utils/busFactorAnalyzer.js";
 import { analyzeOwnership } from "../utils/ownershipAnalyzer.js";
+import { analyzeProsCons } from "../utils/prosConsAnalyzer.js";
 
 const generateHeuristicSummary = (profile, repoStats, commitStats) => {
     const primaryLanguage = repoStats.languages.length > 0 ? repoStats.languages[0] : 'various technologies';
@@ -55,6 +56,7 @@ export const fetchGithubData = async (username) => {
     
     const score = calculateDevScore(repoStats, activityStats, commitStats);
     const aiSummary = generateHeuristicSummary(userResponse.data, repoStats, commitStats);
+    const recruiterSignals = analyzeProsCons(repoStats, activityStats, commitStats, cicdStats, reposResponse.data);
 
     return {
         profile: userResponse.data,
@@ -65,6 +67,7 @@ export const fetchGithubData = async (username) => {
         cicdStats,
         commitStats,
         busFactorStats,
-        ownershipStats
+        ownershipStats,
+        recruiterSignals
     };
 };
