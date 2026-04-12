@@ -110,3 +110,40 @@ body {
     display: none !important;
   }
 }
+
+/* Force Light Theme for PDF Generation */
+.pdf-report-mode {
+  background-color: #fff !important;
+  color: #000 !important;
+  padding: 40px !important;
+  font-family: sans-serif !important;
+}
+
+.pdf-report-mode * {
+  color: #000 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.pdf-report-mode .stat-card, 
+.pdf-report-mode .signal-block {
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  background-color: #fff !important;
+  border-radius: 12px !important;
+}
+
+.pdf-report-mode .signal-row-value {
+  background-color: #f3f4f6 !important;
+  color: #000 !important;
+}
+
+.pdf-report-mode img {
+  border: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.pdf-report-mode .hide-in-pdf,
+.pdf-report-mode #hide-in-pdf {
+  display: none !important;
+}

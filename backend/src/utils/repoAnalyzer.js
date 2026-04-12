@@ -1,7 +1,6 @@
 export const analyzeRepos = (repos) => {
     let totalStars = 0;
     let activeRepos = 0;
-    let reposWithDocs = 0;
     let archivedRepos = 0;
     let totalDaysSinceUpdate = 0;
 
@@ -32,9 +31,6 @@ export const analyzeRepos = (repos) => {
 
         if (!repo.fork && repo.size > 0) {
             activeRepos++;
-            if (repo.description || repo.has_wiki) {
-                reposWithDocs++;
-            }
             
             if (repo.updated_at) {
                 const updatedDate = new Date(repo.updated_at);
@@ -64,7 +60,6 @@ export const analyzeRepos = (repos) => {
         }
     });
 
-    const documentationScore = activeRepos > 0 ? (reposWithDocs / activeRepos) * 100 : 0;
     const avgDaysSinceUpdate = activeRepos > 0 ? totalDaysSinceUpdate / activeRepos : 0;
 
     return {
@@ -76,7 +71,6 @@ export const analyzeRepos = (repos) => {
         avgDaysSinceUpdate: Math.round(avgDaysSinceUpdate),
         languages: Array.from(languages),
         languageBreakdown,
-        recentLanguageBreakdown,
-        documentationScore: Math.round(documentationScore)
+        recentLanguageBreakdown
     };
 };

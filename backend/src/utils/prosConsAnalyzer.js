@@ -87,12 +87,13 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
 
     // --- CONS (Optimization Opportunities) ---
 
-    // 1. Documentation Gaps
-    if (repoStats.documentationScore < 30) {
+    // 1. Documentation Gaps (Focus on READMEs)
+    if (repoStats.documentationScore < 100 && repoStats.undocumentedRepos.length > 0) {
         cons.push({
-            title: "Sparse Documentation",
-            description: "Many of your projects lack READMEs or descriptions, which might make them hard for recruiters to understand.",
-            suggestion: "Add a clear README.md to your top 3 projects."
+            title: "Documentation Gaps",
+            description: "Some of your projects are missing README.md files, which are essential for engineering audits.",
+            repos: repoStats.undocumentedRepos,
+            suggestion: "Add a clear README.md to these repositories to explain the project's purpose and how to run it."
         });
     }
 
@@ -124,11 +125,12 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     }
 
     // 5. Missing Hygiene
-    if (!hasLicense && repoStats.activeRepos > 2) {
+    if (repoStats.reposWithoutLicense && repoStats.reposWithoutLicense.length > 0) {
         cons.push({
             title: "Missing Licenses",
-            description: "Your projects don't have explicit licenses, which can be a red flag for professional collaboration.",
-            suggestion: "Add an MIT or Apache license to your public repositories."
+            description: "Your projects don't have explicit licenses, which can be a red flag for legal and professional collaboration.",
+            repos: repoStats.reposWithoutLicense,
+            suggestion: "Add an MIT or Apache license to your public repositories to make them 'open-source ready'."
         });
     }
 

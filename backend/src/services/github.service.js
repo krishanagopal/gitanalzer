@@ -2,7 +2,7 @@ import githubClient from "../config/github.js";
 import { analyzeRepos } from "../utils/repoAnalyzer.js";
 import { analyzeActivity } from "../utils/activityAnalyzer.js";
 import { calculateDevScore } from "../utils/scoreCalculator.js";
-import { analyzeCICD } from "../utils/cicdAnalyzer.js";
+import { analyzeRepoHealth } from "../utils/repoDeepAnalyzer.js";
 import { analyzeCommits } from "../utils/commitAnalyzer.js";
 import { analyzeBusFactor } from "../utils/busFactorAnalyzer.js";
 import { analyzeOwnership } from "../utils/ownershipAnalyzer.js";
@@ -43,12 +43,12 @@ export const fetchGithubData = async (username) => {
     const activityStats = analyzeActivity(eventsResponse.data);
 
     const [
-        cicdStats,
+        healthStats,
         commitStats,
         busFactorStats,
         ownershipStats
     ] = await Promise.all([
-        analyzeCICD(reposResponse.data, githubClient),
+        analyzeRepoHealth(reposResponse.data, githubClient),
         analyzeCommits(reposResponse.data, githubClient),
         analyzeBusFactor(reposResponse.data, githubClient),
         analyzeOwnership(reposResponse.data, githubClient, username)
@@ -56,15 +56,33 @@ export const fetchGithubData = async (username) => {
     
     const score = calculateDevScore(repoStats, activityStats, commitStats);
     const aiSummary = generateHeuristicSummary(userResponse.data, repoStats, commitStats);
-    const recruiterSignals = analyzeProsCons(repoStats, activityStats, commitStats, cicdStats, reposResponse.data);
+    
+    // Inject refined undocumentedRepos, reposWithoutLicense and documentationScore into repoStats for prosConsAnalyzer
+    const recruiterSignals = analyzeProsCons(
+        { 
+            ...repoStats, 
+            undocumentedRepos: healthStats.undocumentedRepos, 
+            reposWithoutLicense: healthStats.reposWithoutLicense,
+            documentationScore: healthStats.documentationScore 
+        }, 
+        activityStats, 
+        commitStats, 
+        { cicdRepos: healthStats.cicdRepos }, 
+        reposResponse.data
+    );
 
     return {
         profile: userResponse.data,
-        repoStats,
+        repoStats: { 
+            ...repoStats, 
+            undocumentedRepos: healthStats.undocumentedRepos,
+            reposWithoutLicense: healthStats.reposWithoutLicense,
+            documentationScore: healthStats.documentationScore
+        },
         activityStats,
         score,
         aiSummary,
-        cicdStats,
+        cicdStats: { cicdRepos: healthStats.cicdRepos },
         commitStats,
         busFactorStats,
         ownershipStats,
