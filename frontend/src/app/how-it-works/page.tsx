@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { HLSVideo } from '../../components/HLSVideo';
 
@@ -25,12 +26,14 @@ export default function HowItWorks() {
             Connect any GitHub profile securely. Our proprietary intelligence engine maps thousands of activity points—from your architectural layout and framework diversity to commit consistency and peer collaboration rates—resolving an accurate assessment in roughly 15 seconds.
           </p>
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-6">
-            <button className="liquid-glass-strong rounded-full px-10 py-5 font-body font-bold flex items-center gap-3 hover:scale-105 transition-transform text-sm shadow-2xl">
-              Connect GitHub <ArrowUpRight className="w-5 h-5" />
-            </button>
-            <button className="text-white hover:text-white/80 border-b border-white/20 hover:border-white transition-colors pb-1 font-body text-sm font-medium mt-4 sm:mt-0">
+            <Link href="/#search-input">
+              <button className="liquid-glass-strong rounded-full px-10 py-5 font-body font-bold flex items-center gap-3 shadow-2xl">
+                Connect GitHub <ArrowUpRight className="w-5 h-5" />
+              </button>
+            </Link>
+            <Link href="/blueprint" className="text-white hover:text-white/80 border-b border-white/20 hover:border-white transition-colors pb-1 font-body text-sm font-medium mt-4 sm:mt-0">
               Read the Whitepaper
-            </button>
+            </Link>
           </div>
         </div>
       </section>

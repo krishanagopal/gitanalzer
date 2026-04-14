@@ -1,8 +1,21 @@
+"use client";
 import React from 'react';
+import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { HLSVideo } from './HLSVideo';
 
 export function Footer() {
+  const handleScrollToSearch = (e: React.MouseEvent) => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      const el = document.getElementById('search-input');
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.focus();
+      }
+    }
+  };
+
   return (
     <footer className="relative w-full pt-40 pb-16 px-6 flex flex-col items-center justify-center overflow-hidden bg-black mt-auto">
       <HLSVideo 
@@ -19,12 +32,16 @@ export function Footer() {
           Enter any GitHub username to instantly map out strengths, weaknesses, and a comprehensive developer baseline.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-4 mt-12">
-          <button className="liquid-glass-strong rounded-full px-10 py-5 font-body font-medium hover:scale-105 transition-transform text-sm shadow-xl flex items-center gap-2 text-white">
-            Analyze a Profile <ArrowUpRight className="w-4 h-4" />
-          </button>
-          <button className="bg-white text-black rounded-full px-10 py-5 font-body font-medium hover:bg-white/90 transition-colors text-sm shadow-xl">
-            View Enterprise API
-          </button>
+          <Link href="/#search-input" onClick={handleScrollToSearch}>
+            <button className="liquid-glass-strong rounded-full px-10 py-5 font-body font-medium shadow-xl flex items-center gap-2 text-white">
+              Analyze a Profile <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </Link>
+          <Link href="/enterprise">
+            <button className="bg-white text-black rounded-full px-10 py-5 font-body font-medium transition-colors text-sm shadow-xl">
+              View Enterprise API
+            </button>
+          </Link>
         </div>
       </div>
 

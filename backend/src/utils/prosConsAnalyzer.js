@@ -85,6 +85,67 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     }
 
 
+    // 9. Architectural Excellence
+    if (repoStats.architectureScore >= 70) {
+        pros.push({
+            title: "Clean Architect",
+            description: "Your projects follow professional folder structures (src, utils, controllers), showing you build modular, scalable systems.",
+            impact: "High"
+        });
+    }
+
+    // 10. Product Mindset
+    if (repoStats.readmeQualityScore >= 60) {
+        pros.push({
+            title: "Product-Ready Quality",
+            description: "Your READMEs go beyond basics, including Features, Setup, and Usage. This project-as-a-product mindset is rare and highly valued.",
+            impact: "High"
+        });
+    }
+
+    // 11. Feature Branch Mastery
+    if (repoStats.workflowStats?.reposWithMultipleBranches > 0) {
+        pros.push({
+            title: "Feature Brancher",
+            description: "You use multiple branches for development, suggesting a professional trunk-based or feature-branching workflow.",
+            impact: "Medium"
+        });
+    }
+
+    // 12. Release Discipline
+    if (repoStats.workflowStats?.reposWithReleases > 0 || activityStats.releases > 0) {
+        pros.push({
+            title: "Release Disciplined",
+            description: "You utilize GitHub Releases to version your software, ensuring stability and professional distribution.",
+            impact: "High"
+        });
+    }
+
+    // 13. Workflow Variety
+    if (activityStats.workflowDiversity >= 3) {
+        pros.push({
+            title: "Workflow Pro",
+            description: "You utilize a wide variety of GitHub features (Issues, PRs, Projects) to manage your development lifecycle.",
+            impact: "High"
+        });
+    }
+
+    // 14. Personal Branding
+    if (repoStats.profileBrandingScore >= 50) {
+        pros.push({
+            title: "Branded Engineer",
+            description: "You have a professional Profile README that effectively communicates your value proposition and tech stack.",
+            impact: "High"
+        });
+    } else if (repoStats.profileBrandingScore >= 75) {
+        pros.push({
+            title: "Visual Communicator",
+            description: "Your profile is exceptionally well-branded with stats, icons, and clear navigation for recruiters.",
+            impact: "High"
+        });
+    }
+
+
     // --- CONS (Optimization Opportunities) ---
 
     // 1. Documentation Gaps (Focus on READMEs)
@@ -97,7 +158,45 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
         });
     }
 
-    // 2. Commit Structure
+    // 2. Barebones Documentation (Style Gaps)
+    if (repoStats.poorDocsRepos && repoStats.poorDocsRepos.length > 0) {
+        cons.push({
+            title: "Documentation Depth",
+            description: "Some repositories have READMEs, but they lack professional sections like 'Installation' or 'Features'.",
+            repos: repoStats.poorDocsRepos,
+            suggestion: "A 'Product' README should include: Features, Tech Stack, Demo, Installation, and Usage sections."
+        });
+    }
+
+    // 3. Flat Project Hierarchy
+    if (repoStats.flatStructureRepos && repoStats.flatStructureRepos.length > 0) {
+        cons.push({
+            title: "Flat Project Structure",
+            description: "Some projects have all files in the root directory rather than using a modular 'src' or 'lib' hierarchy.",
+            repos: repoStats.flatStructureRepos,
+            suggestion: "Adopt standard folder patterns (e.g., /src, /controllers, /utils) to show you can manage complex codebases."
+        });
+    }
+
+    // 4. Solo Development Pattern
+    if (activityStats.pullRequests === 0 && repoStats.workflowStats?.reposWithMultipleBranches === 0 && repoStats.activeRepos > 3) {
+        cons.push({
+            title: "Solo Dev Pattern",
+            description: "Most of your work is pushed directly to 'main' without using Pull Requests or branching.",
+            suggestion: "Try using the 'GitHub Flow' (branching and PRs) even on your own projects to simulate professional team environments."
+        });
+    }
+
+    // 5. Missing Versioning
+    if (repoStats.workflowStats?.reposWithReleases === 0 && repoStats.activeRepos > 5) {
+        cons.push({
+            title: "Missing Versioning",
+            description: "Your projects don't use 'Releases' or tags to mark stable versions.",
+            suggestion: "Use GitHub Releases to tag 'v1.0.0' or 'v0.1.0' milestones to show you understand the software release lifecycle."
+        });
+    }
+
+    // 6. Commit Structure
     if (commitStats.conventionalRatio < 20 && commitStats.totalCommitsAnalyzed > 10) {
         cons.push({
             title: "Unstructured History",
@@ -124,13 +223,12 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
         });
     }
 
-    // 5. Missing Hygiene
-    if (repoStats.reposWithoutLicense && repoStats.reposWithoutLicense.length > 0) {
+    // 9. Stealth Profile
+    if (!repoStats.hasProfileReadme) {
         cons.push({
-            title: "Missing Licenses",
-            description: "Your projects don't have explicit licenses, which can be a red flag for legal and professional collaboration.",
-            repos: repoStats.reposWithoutLicense,
-            suggestion: "Add an MIT or Apache license to your public repositories to make them 'open-source ready'."
+            title: "Stealth Mode Profile",
+            description: "You are missing a GitHub Profile README (the special repository matching your username).",
+            suggestion: "Create a repository named exactly after your username to build a professional landing page with an intro and tech stack."
         });
     }
 

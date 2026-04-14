@@ -72,10 +72,49 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-body);
   background-color: #000;
   color: #fff;
+}
+
+/* Responsible Button Interactivity */
+button, 
+.liquid-glass[role="button"],
+.liquid-glass-strong[role="button"],
+.btn {
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover, 
+.btn:hover {
+  transform: scale(1.02);
+}
+
+button:active, 
+.btn:active {
+  transform: scale(0.96);
+}
+
+button:focus-visible, 
+.btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+button:disabled, 
+.btn:disabled,
+.btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none !important;
 }
 
 @media print {
@@ -146,4 +185,13 @@ body {
 .pdf-report-mode .hide-in-pdf,
 .pdf-report-mode #hide-in-pdf {
   display: none !important;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
 }

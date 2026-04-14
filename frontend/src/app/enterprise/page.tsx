@@ -42,9 +42,11 @@ export default function EnterprisePage() {
            <div className="flex-1 w-full md:w-auto liquid-glass-strong rounded-2xl p-8 flex flex-col items-center justify-center text-center z-10 border border-white/10">
              <div className="text-5xl font-heading italic text-white">Custom</div>
              <div className="text-white/50 font-body text-sm mt-3 mb-8 px-4 leading-relaxed">Priced dynamically to match your candidate volume flow.</div>
-             <button className="bg-white text-black w-full rounded-full px-8 py-5 font-body font-bold flex items-center justify-center gap-3 hover:bg-white/90 shadow-2xl transition-all hover:scale-105">
-               Contact Sales <ArrowUpRight className="w-5 h-5" />
-             </button>
+             <a href="mailto:hello@gitanalyzer.com" className="w-full">
+               <button className="bg-white text-black w-full rounded-full px-8 py-5 font-body font-bold flex items-center justify-center gap-3 shadow-2xl">
+                 Contact Sales <ArrowUpRight className="w-5 h-5" />
+               </button>
+             </a>
            </div>
         </div>
       </section>

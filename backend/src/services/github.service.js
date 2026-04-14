@@ -57,13 +57,20 @@ export const fetchGithubData = async (username) => {
     const score = calculateDevScore(repoStats, activityStats, commitStats);
     const aiSummary = generateHeuristicSummary(userResponse.data, repoStats, commitStats);
     
-    // Inject refined undocumentedRepos, reposWithoutLicense and documentationScore into repoStats for prosConsAnalyzer
+    // Inject advanced health metrics into repoStats for prosConsAnalyzer
     const recruiterSignals = analyzeProsCons(
         { 
             ...repoStats, 
             undocumentedRepos: healthStats.undocumentedRepos, 
             reposWithoutLicense: healthStats.reposWithoutLicense,
-            documentationScore: healthStats.documentationScore 
+            documentationScore: healthStats.documentationScore,
+            architectureScore: healthStats.architectureScore,
+            readmeQualityScore: healthStats.readmeQualityScore,
+            flatStructureRepos: healthStats.flatStructureRepos,
+            poorDocsRepos: healthStats.poorDocsRepos,
+            workflowStats: healthStats.workflowStats,
+            profileBrandingScore: healthStats.profileBrandingScore,
+            hasProfileReadme: healthStats.hasProfileReadme
         }, 
         activityStats, 
         commitStats, 
@@ -77,7 +84,14 @@ export const fetchGithubData = async (username) => {
             ...repoStats, 
             undocumentedRepos: healthStats.undocumentedRepos,
             reposWithoutLicense: healthStats.reposWithoutLicense,
-            documentationScore: healthStats.documentationScore
+            documentationScore: healthStats.documentationScore,
+            architectureScore: healthStats.architectureScore,
+            readmeQualityScore: healthStats.readmeQualityScore,
+            flatStructureRepos: healthStats.flatStructureRepos,
+            poorDocsRepos: healthStats.poorDocsRepos,
+            workflowStats: healthStats.workflowStats,
+            profileBrandingScore: healthStats.profileBrandingScore,
+            hasProfileReadme: healthStats.hasProfileReadme
         },
         activityStats,
         score,

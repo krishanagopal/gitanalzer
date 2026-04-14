@@ -1,5 +1,6 @@
 "use client";
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { Zap, Palette, BarChart3, Shield } from 'lucide-react';
 import { HLSVideo } from '../../components/HLSVideo';
 
@@ -27,9 +28,11 @@ export default function FeaturesPage() {
             <p className="font-body font-light text-white/60 text-base leading-relaxed max-w-md">
               Stop counting followers. We analyze total project complexity, architecture, and technology diversity to reveal a developer's true technical spectrum.
             </p>
-            <button className="liquid-glass-strong rounded-full px-8 py-3.5 font-body font-medium mt-2 hover:scale-105 transition-transform text-sm shadow-lg">
-              Analyze your repo
-            </button>
+            <Link href="/#search-input">
+              <button className="liquid-glass-strong rounded-full px-8 py-3.5 font-body font-medium mt-2 shadow-lg">
+                Analyze your repo
+              </button>
+            </Link>
           </div>
           <div className="flex-1 w-full aspect-[4/3] liquid-glass rounded-2xl overflow-hidden shadow-2xl p-2 md:p-3 relative group">
              <div className="w-full h-full rounded-xl overflow-hidden relative bg-black/80 border border-white/5 group-hover:border-white/20 transition-colors duration-500 flex flex-col items-center justify-center p-6 text-center">
@@ -57,9 +60,9 @@ export default function FeaturesPage() {
             <p className="font-body font-light text-white/60 text-base leading-relaxed max-w-md">
               We evaluate real development activity: pull request frequency, code review participation, and consistent commit streaks over time.
             </p>
-            <button className="text-white hover:text-white/80 border-b border-white/20 hover:border-white transition-colors pb-1 font-body text-sm font-medium mt-2">
+            <Link href="/how-it-works" className="text-white hover:text-white/80 border-b border-white/20 hover:border-white transition-colors pb-1 font-body text-sm font-medium mt-2">
               See the algorithms
-            </button>
+            </Link>
           </div>
           <div className="flex-1 w-full aspect-[4/3] liquid-glass rounded-2xl overflow-hidden shadow-2xl p-2 md:p-3 relative group">
              <div className="w-full h-full rounded-xl overflow-hidden relative bg-black/40 border border-white/5 group-hover:border-white/20 transition-colors duration-500 p-4">

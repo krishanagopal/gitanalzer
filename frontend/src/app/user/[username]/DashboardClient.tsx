@@ -230,7 +230,10 @@ export function DashboardClient({ username }: { username: string }) {
             <div className="space-y-4">
               <SignalRow label="CI/CD Repositories" value={cicdStats.cicdRepos} tooltip="Automated testing/deployment." />
               <SignalRow label="Conventional Commits" value={`${(commitStats.conventionalRatio || 0).toFixed(0)}%`} />
-              <SignalRow label="Documentation" value={`${repoStats.documentationScore || 0}%`} />
+              <SignalRow label="Architecture" value={`${repoStats.architectureScore || 0}%`} tooltip="Modular folder organization (src, controllers, services, etc.)" />
+              <SignalRow label="Doc Style" value={`${repoStats.readmeQualityScore || 0}%`} tooltip="Presence of Features, Setup, and Usage sections in READMEs." />
+              <SignalRow label="Branding" value={`${repoStats.profileBrandingScore || 0}%`} tooltip="Quality of your GitHub Profile README (Special Repo)." />
+              <SignalRow label="Documentation" value={`${repoStats.documentationScore || 0}%`} tooltip="Percentage of repos with a README file." />
               <SignalRow label="Avg Commit Msg" value={`${Math.round(commitStats.avgMessageLength || 0)} chars`} />
             </div>
           </div>
@@ -241,6 +244,9 @@ export function DashboardClient({ username }: { username: string }) {
             <div className="space-y-4">
               <SignalRow label="Avg Ownership" value={`${(ownershipStats.avgOwnership || 0).toFixed(0)}%`} />
               <SignalRow label="Team Projects" value={busFactorStats.collaborativeProjects || ownershipStats?.teamProjects} />
+              <SignalRow label="Total Releases" value={repoStats.workflowStats?.reposWithReleases || activityStats.releases} />
+              <SignalRow label="Issue Activity" value={activityStats.issues} tooltip="Engagement with issues (opening, commenting, closing)." />
+              <SignalRow label="Branching Flow" value={repoStats.workflowStats?.reposWithMultipleBranches > 0 ? "Active" : "Main-only"} />
               
               <div className="pt-2">
                 <div className="text-white/70 print:text-black/70 text-[10px] sm:text-xs mb-2 uppercase tracking-wider font-semibold">Top Projects</div>
