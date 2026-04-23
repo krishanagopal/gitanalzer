@@ -15,12 +15,13 @@ export async function generateMetadata(
     const data = await getGithubAnalysis(username);
     const score = data.score;
     const name = data.profile.name || username;
+    const level = Number(score) < 30 ? 'Code Explorer' : Number(score) < 60 ? 'Consistent Coder' : Number(score) < 85 ? 'Full Stack Builder' : 'Product Engineer';
     
     return {
-      title: `${name}'s Developer Score: ${score}/100 | GitAnalyzer`,
-      description: `Check out the deep engineering analysis for ${name}. GitAnalyzer score: ${score}/100 based on commit patterns, documentation, and collaboration.`,
+      title: `${name}'s Developer Level: ${level} | GitAnalyzer`,
+      description: `Check out the deep engineering analysis for ${name}. GitAnalyzer level: ${level} based on commit patterns, documentation, and collaboration.`,
       openGraph: {
-        title: `${name} scored ${score}/100 on GitAnalyzer`,
+        title: `${name} reached ${level} level on GitAnalyzer`,
         description: `High-fidelity engineering report for ${name}. View recruiter signals, coding habits, and more.`,
         type: 'profile',
         username: username,
@@ -28,7 +29,7 @@ export async function generateMetadata(
       twitter: {
         card: 'summary_large_image',
         title: `${name}'s GitAnalyzer Report`,
-        description: `Professional scorecard for ${name}. Score: ${score}/100`,
+        description: `Professional scorecard for ${name}. Level: ${level}`,
       }
     };
   } catch (error) {

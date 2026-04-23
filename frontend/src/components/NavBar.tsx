@@ -16,10 +16,10 @@ export function NavBar() {
   };
 
   return (
-    <nav className="fixed top-4 inset-x-0 z-50 flex justify-center w-full px-6">
-      <div className="w-full max-w-7xl flex items-center justify-between">
-        <Link href="/" className="w-12 h-12 rounded-full liquid-glass-strong flex items-center justify-center font-heading italic text-xl shadow-lg hover:scale-105 transition-transform text-white decoration-transparent">
-          GA<sup className="text-[10px]">&reg;</sup>
+    <nav className="fixed top-4 inset-x-0 z-50 flex justify-center w-full px-4 sm:px-6">
+      <div className="w-full max-w-7xl flex items-center justify-between gap-2">
+        <Link href="/" className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-full liquid-glass-strong flex items-center justify-center font-heading italic text-lg sm:text-xl shadow-lg hover:scale-105 transition-transform text-white decoration-transparent">
+          GA<sup className="text-[8px] sm:text-[10px]">&reg;</sup>
         </Link>
         
         <div className="hidden md:flex liquid-glass rounded-full px-8 py-3 items-center gap-8 shadow-md">

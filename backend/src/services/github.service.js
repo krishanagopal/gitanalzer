@@ -28,8 +28,14 @@ const generateHeuristicSummary = (profile, repoStats, commitStats) => {
         activityNote = "often productive during late night hours.";
     }
 
+    let projectNote = "";
+    if (repoStats.topProjects && repoStats.topProjects.length > 0) {
+        const topNames = repoStats.topProjects.map(p => p.name).join(' and ');
+        projectNote = ` They demonstrate these skills primarily in projects like ${topNames}.`;
+    }
+
     const name = profile.name || profile.login;
-    return `${name} is ${persona} primarily working in ${primaryLanguage}. They demonstrate a ${repoStats.documentationScore}% documentation rate across active repositories, ${activityNote}`;
+    return `${name} is ${persona} primarily working in ${primaryLanguage}.${projectNote} They demonstrate a ${repoStats.documentationScore || 0}% documentation rate across active repositories, ${activityNote}`;
 };
 
 export const fetchGithubData = async (username) => {
@@ -40,7 +46,7 @@ export const fetchGithubData = async (username) => {
     ]);
 
     const repoStats = analyzeRepos(reposResponse.data);
-    const activityStats = analyzeActivity(eventsResponse.data);
+    const activityStats = analyzeActivity(eventsResponse.data, username);
 
     const [
         healthStats,
@@ -55,23 +61,28 @@ export const fetchGithubData = async (username) => {
     ]);
     
     const score = calculateDevScore(repoStats, activityStats, commitStats);
-    const aiSummary = generateHeuristicSummary(userResponse.data, repoStats, commitStats);
+    
+    const enhancedRepoStats = { 
+        ...repoStats, 
+        undocumentedRepos: healthStats.undocumentedRepos,
+        reposWithoutLicense: healthStats.reposWithoutLicense,
+        documentationScore: healthStats.documentationScore,
+        architectureScore: healthStats.architectureScore,
+        readmeQualityScore: healthStats.readmeQualityScore,
+        testingScore: healthStats.testingScore,
+        deploymentScore: healthStats.deploymentScore,
+        flatStructureRepos: healthStats.flatStructureRepos,
+        poorDocsRepos: healthStats.poorDocsRepos,
+        workflowStats: healthStats.workflowStats,
+        profileBrandingScore: healthStats.profileBrandingScore,
+        hasProfileReadme: healthStats.hasProfileReadme
+    };
+    
+    const aiSummary = generateHeuristicSummary(userResponse.data, enhancedRepoStats, commitStats);
     
     // Inject advanced health metrics into repoStats for prosConsAnalyzer
     const recruiterSignals = analyzeProsCons(
-        { 
-            ...repoStats, 
-            undocumentedRepos: healthStats.undocumentedRepos, 
-            reposWithoutLicense: healthStats.reposWithoutLicense,
-            documentationScore: healthStats.documentationScore,
-            architectureScore: healthStats.architectureScore,
-            readmeQualityScore: healthStats.readmeQualityScore,
-            flatStructureRepos: healthStats.flatStructureRepos,
-            poorDocsRepos: healthStats.poorDocsRepos,
-            workflowStats: healthStats.workflowStats,
-            profileBrandingScore: healthStats.profileBrandingScore,
-            hasProfileReadme: healthStats.hasProfileReadme
-        }, 
+        enhancedRepoStats, 
         activityStats, 
         commitStats, 
         { cicdRepos: healthStats.cicdRepos }, 
@@ -80,19 +91,7 @@ export const fetchGithubData = async (username) => {
 
     return {
         profile: userResponse.data,
-        repoStats: { 
-            ...repoStats, 
-            undocumentedRepos: healthStats.undocumentedRepos,
-            reposWithoutLicense: healthStats.reposWithoutLicense,
-            documentationScore: healthStats.documentationScore,
-            architectureScore: healthStats.architectureScore,
-            readmeQualityScore: healthStats.readmeQualityScore,
-            flatStructureRepos: healthStats.flatStructureRepos,
-            poorDocsRepos: healthStats.poorDocsRepos,
-            workflowStats: healthStats.workflowStats,
-            profileBrandingScore: healthStats.profileBrandingScore,
-            hasProfileReadme: healthStats.hasProfileReadme
-        },
+        repoStats: enhancedRepoStats,
         activityStats,
         score,
         aiSummary,

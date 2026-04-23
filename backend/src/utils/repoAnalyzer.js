@@ -12,8 +12,16 @@ export const analyzeRepos = (repos) => {
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const today = new Date();
 
+    const tutorialKeywords = ['tutorial', 'clone', 'bootcamp', 'learning', 'demo', 'course', '100days', 'practice'];
+    
     const sortedRepos = [...repos].sort((a, b) => b.stargazers_count - a.stargazers_count);
-    const topProjects = sortedRepos.slice(0, 2).map(r => ({
+    
+    const seriousProjects = sortedRepos.filter(r => {
+        const nameAndDesc = (r.name + ' ' + (r.description || '')).toLowerCase();
+        return !tutorialKeywords.some(keyword => nameAndDesc.includes(keyword)) && !r.fork;
+    });
+
+    const topProjects = seriousProjects.slice(0, 2).map(r => ({
         name: r.name,
         html_url: r.html_url,
         description: r.description,
@@ -21,6 +29,7 @@ export const analyzeRepos = (repos) => {
     }));
 
     const highestStars = sortedRepos.length > 0 ? sortedRepos[0].stargazers_count : 0;
+    const seriousReposCount = seriousProjects.length;
 
     repos.forEach(repo => {
         totalStars += repo.stargazers_count;
@@ -71,6 +80,7 @@ export const analyzeRepos = (repos) => {
         avgDaysSinceUpdate: Math.round(avgDaysSinceUpdate),
         languages: Array.from(languages),
         languageBreakdown,
-        recentLanguageBreakdown
+        recentLanguageBreakdown,
+        seriousReposCount
     };
 };

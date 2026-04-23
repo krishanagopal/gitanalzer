@@ -1,4 +1,4 @@
-export const analyzeActivity = (events) => {
+export const analyzeActivity = (events, username) => {
 
     let totalCommits = 0;
     let pullRequests = 0;
@@ -6,6 +6,12 @@ export const analyzeActivity = (events) => {
     let releases = 0;
     const activeMonths = new Set();
     const eventTypesFound = new Set();
+    
+    const ossActivity = {
+        externalPRs: 0,
+        forks: 0,
+        externalIssues: 0
+    };
 
     events.forEach(event => {
         eventTypesFound.add(event.type);
@@ -13,14 +19,20 @@ export const analyzeActivity = (events) => {
         const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
         activeMonths.add(monthKey);
 
+        const isExternalRepo = event.repo && event.repo.name && !event.repo.name.startsWith(`${username}/`);
+
         if (event.type === "PushEvent") {
             totalCommits += event.payload.commits?.length || 0;
         } else if (event.type === "PullRequestEvent") {
             pullRequests++;
+            if (isExternalRepo) ossActivity.externalPRs++;
         } else if (event.type === "IssuesEvent" || event.type === "IssueCommentEvent") {
             issues++;
+            if (isExternalRepo) ossActivity.externalIssues++;
         } else if (event.type === "ReleaseEvent") {
             releases++;
+        } else if (event.type === "ForkEvent") {
+            ossActivity.forks++;
         }
     });
 
@@ -34,7 +46,8 @@ export const analyzeActivity = (events) => {
         issues,
         releases,
         activeMonths: activeMonths.size,
-        workflowDiversity
+        workflowDiversity,
+        ossActivity
     };
 
 };

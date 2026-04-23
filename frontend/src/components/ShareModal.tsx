@@ -39,8 +39,10 @@ export default function ShareModal({ isOpen, onClose, username, score, data, tar
 
   const topSignal = data?.recruiterSignals?.pros?.[0]?.title || 'High Engineering Depth';
   
-  const shareText = `Check out my Developer Score on GitAnalyzer! 
-🚀 Score: ${score}/100
+  const level = Number(score) < 30 ? 'Code Explorer' : Number(score) < 60 ? 'Consistent Coder' : Number(score) < 85 ? 'Full Stack Builder' : 'Product Engineer';
+
+  const shareText = `Check out my Developer Level on GitAnalyzer! 
+🚀 Level: ${level}
 🛠️ Focus: ${topSkills}
 ✨ Signal: ${topSignal}
 

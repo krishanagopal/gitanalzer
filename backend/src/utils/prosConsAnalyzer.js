@@ -5,10 +5,10 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     // --- PROS (Recruiter Signals) ---
     
     // 1. Strong Pinned / Top Repos
-    if (repoStats.highestStars >= 10) {
+    if (repoStats.highestStars >= 10 && repoStats.topProjects?.length > 0) {
         pros.push({
             title: "Portfolio Flagship",
-            description: "You have projects with significant community validation (stars), showing you build things people find useful.",
+            description: `Projects like ${repoStats.topProjects[0].name} have significant community validation (${repoStats.topProjects[0].stars} stars), showing you build things people find useful.`,
             impact: "High"
         });
     }
@@ -38,11 +38,28 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     }
 
     // 4. Live Demos
-    const hasLiveDemos = repos.some(r => r.homepage && r.homepage.trim() !== "");
-    if (hasLiveDemos) {
+    const liveDeployments = repos.filter(r => r.homepage && r.homepage.trim() !== "");
+    if (repoStats.deploymentScore > 20 || liveDeployments.length > 0) {
+        const repoName = liveDeployments.length > 0 ? liveDeployments[0].name : "your projects";
         pros.push({
             title: "Deployment Ready",
-            description: "You include live demo links in your repositories, proving your code works in production environments.",
+            description: `You include live demo links in repositories like ${repoName}, proving your code works in production environments.`,
+            impact: "High"
+        });
+    }
+    
+    // Testing & OSS
+    if (repoStats.testingScore > 40) {
+        pros.push({
+            title: "Test-Driven Mindset",
+            description: "You include test suites (e.g. jest, cypress, specs) in your projects, a strong signal for engineering reliability.",
+            impact: "High"
+        });
+    }
+    if (activityStats.ossActivity && (activityStats.ossActivity.externalPRs > 0 || activityStats.ossActivity.forks > 0)) {
+        pros.push({
+            title: "Open Source Contributor",
+            description: "You actively engage with the open-source community through forks and external pull requests.",
             impact: "High"
         });
     }
@@ -162,7 +179,7 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     if (repoStats.poorDocsRepos && repoStats.poorDocsRepos.length > 0) {
         cons.push({
             title: "Documentation Depth",
-            description: "Some repositories have READMEs, but they lack professional sections like 'Installation' or 'Features'.",
+            description: `Repositories like ${repoStats.poorDocsRepos[0]} have READMEs, but they lack professional sections like 'Installation' or 'Features'.`,
             repos: repoStats.poorDocsRepos,
             suggestion: "A 'Product' README should include: Features, Tech Stack, Demo, Installation, and Usage sections."
         });
@@ -172,7 +189,7 @@ export const analyzeProsCons = (repoStats, activityStats, commitStats, cicdStats
     if (repoStats.flatStructureRepos && repoStats.flatStructureRepos.length > 0) {
         cons.push({
             title: "Flat Project Structure",
-            description: "Some projects have all files in the root directory rather than using a modular 'src' or 'lib' hierarchy.",
+            description: `Projects like ${repoStats.flatStructureRepos[0]} have all files in the root directory rather than using a modular 'src' or 'lib' hierarchy.`,
             repos: repoStats.flatStructureRepos,
             suggestion: "Adopt standard folder patterns (e.g., /src, /controllers, /utils) to show you can manage complex codebases."
         });

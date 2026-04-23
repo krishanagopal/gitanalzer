@@ -1,5 +1,7 @@
 const PROFESSIONAL_FOLDERS = ['src', 'controllers', 'services', 'routes', 'utils', 'config', 'tests', 'api', 'lib', 'components', 'models', 'docs', 'internal', 'pkg'];
 const REQUIRED_README_SECTIONS = ['feature', 'install', 'usage', 'tech', 'demo', 'architecture', 'screenshot', 'setup', 'requirement'];
+const DEPLOYMENT_URLS = ['vercel.app', 'netlify.app', 'onrender.com', 'herokuapp.com', 'aws', 'firebaseapp.com'];
+const TESTING_PATTERNS = ['test', 'spec', '__tests__', 'tests', 'cypress', 'jest'];
 
 /**
  * Performs deep repository checks by analyzing the root directory structure, README content, and workflow signals.
@@ -19,6 +21,9 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
     
     let totalArchitectureScore = 0;
     let totalReadmeQualityScore = 0;
+    
+    let totalTestingScore = 0;
+    let totalDeploymentScore = 0;
     
     let reposWithReleases = 0;
     let reposWithMultipleBranches = 0;
@@ -64,6 +69,12 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
             const fileNames = files.map(f => f.name.toLowerCase());
             const dirs = files.filter(f => f.type === 'dir').map(f => f.name.toLowerCase());
 
+            const hasTesting = fileNames.some(name => TESTING_PATTERNS.some(pat => name.includes(pat))) || dirs.some(d => TESTING_PATTERNS.some(pat => d.includes(pat)));
+            const hasEnvConfig = fileNames.some(name => name.includes('.env'));
+            
+            let hasDeployment = false;
+            if (repo.homepage && repo.homepage.trim().length > 0) hasDeployment = true;
+
             // 2. Check for README existence and quality
             const readmeFile = files.find(f => {
                 const name = f.name.toLowerCase();
@@ -94,6 +105,10 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
                     const sectionsFound = REQUIRED_README_SECTIONS.filter(section => content.includes(section));
                     readmeScore = (sectionsFound.length / REQUIRED_README_SECTIONS.length) * 100;
                     if (readmeScore < 40) poorDocsRepos.push(repo.name);
+                    
+                    if (!hasDeployment) {
+                        hasDeployment = DEPLOYMENT_URLS.some(url => content.includes(url));
+                    }
                 } catch (e) {}
             }
 
@@ -140,7 +155,10 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
                 readmeScore,
                 hasMultipleBranches,
                 hasReleases,
-                hasProjects
+                hasProjects,
+                hasTesting,
+                hasDeployment,
+                hasEnvConfig
             };
 
         } catch (err) {
@@ -159,6 +177,8 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
             if (r.hasProjects) reposWithProjects++;
             totalArchitectureScore += r.architectureScore;
             totalReadmeQualityScore += r.readmeScore;
+            if (r.hasTesting) totalTestingScore += 100;
+            if (r.hasDeployment) totalDeploymentScore += 100;
         }
     });
 
@@ -173,6 +193,8 @@ export const analyzeRepoHealth = async (repos, githubClient) => {
         documentationScore: Math.round(docScore),
         architectureScore: Math.round(validResultsCount > 0 ? totalArchitectureScore / validResultsCount : 0),
         readmeQualityScore: Math.round(validResultsCount > 0 ? totalReadmeQualityScore / validResultsCount : 0),
+        testingScore: Math.round(validResultsCount > 0 ? totalTestingScore / validResultsCount : 0),
+        deploymentScore: Math.round(validResultsCount > 0 ? totalDeploymentScore / validResultsCount : 0),
         profileBrandingScore,
         hasProfileReadme,
         workflowStats: {
