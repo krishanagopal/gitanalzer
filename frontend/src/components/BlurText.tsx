@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 interface BlurTextProps {
   text: string;
@@ -13,7 +13,7 @@ export function BlurText({ text, delay = 0, className = "", as: Tag = "h1" }: Bl
   const words = text.split(" ");
   const MotionTag = motion(Tag as any);
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -21,7 +21,7 @@ export function BlurText({ text, delay = 0, className = "", as: Tag = "h1" }: Bl
     },
   };
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: [0, 0.5, 1],
       y: [50, -5, 0],
