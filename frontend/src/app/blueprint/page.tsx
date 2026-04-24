@@ -19,7 +19,7 @@ import {
 import Link from 'next/link';
 import { HLSVideo } from '../../components/HLSVideo';
 
-const MindMapNode = ({ title, children, icon: Icon, colorClass, delay = "" }) => (
+const MindMapNode = ({ title, children, icon: Icon, colorClass, delay = "" }: { title: string; children: React.ReactNode; icon: any; colorClass: string; delay?: string }) => (
   <div className={`group relative liquid-glass p-6 rounded-[1.5rem] border border-white/10 flex flex-col gap-4 hover:border-${colorClass}-500/50 transition-all duration-500 hover:translate-y-[-4px] ${delay}`}>
     <div className={`w-12 h-12 rounded-xl bg-${colorClass}-500/10 flex items-center justify-center border border-${colorClass}-500/20 group-hover:scale-110 transition-transform`}>
       <Icon className={`w-6 h-6 text-${colorClass}-400`} />
@@ -34,7 +34,7 @@ const MindMapNode = ({ title, children, icon: Icon, colorClass, delay = "" }) =>
   </div>
 );
 
-const SubNode = ({ text, tooltip }) => (
+const SubNode = ({ text, tooltip }: { text: string; tooltip?: string }) => (
   <div className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[11px] font-body text-white/70 hover:bg-white/10 hover:text-white transition-all cursor-default flex items-center gap-2 group/sub">
     {text}
     {tooltip && <div className="hidden group-hover/sub:block absolute mt-8 p-2 bg-black/90 rounded text-[10px] w-32 z-50 border border-white/10">{tooltip}</div>}
